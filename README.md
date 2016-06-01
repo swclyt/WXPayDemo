@@ -1,6 +1,6 @@
 # WXPayDemo
  2016-06-01
- 给后台的demo，包含预支付，扫码模式一，模式二为预支付的后半步骤
+ 给后台的demo，包含公众号(H5网页)支付，扫码模式一，模式二为公众号(H5网页)支付的后半步骤
  
  转载请附上 [WXPayDemo](https://github.com/swclyt/WXPayDemo) 项目的github链接...
  

@@ -1,6 +1,10 @@
 # WXPayDemo
  2016-06-01
  给后台的demo，包含预支付，扫码模式一，模式二为预支付的后半步骤
+ 
+ 转载请附上 [WXPayDemo](https://github.com/swclyt/WXPayDemo) 项目的github链接...
+ 
+ 尊重作者劳动成功...
 
 ## *公众号(H5网页)支付
  1) 先在微信公众平台设置OAuth2授权回调路径，在接口权限里面
@@ -119,3 +123,67 @@
 	上面的js代码来自微信支付文档，不是我写的，不要问为什么...
 	
 	之后就会弹出微信支付控件，完成支付，判断结果跳转显示结果页面就好了
+
+### 扫码支付(模式一)下单
+ - 流程如下
+
+生成二维码 -> 微信扫码回调到商户链接 -> 后台解析xml数据 -> 组成预支付参数xml数据 -> post提交预支付 -> 获得返回xml -> 重组xml数据返回微信 -> 完成支付
+
+ - 生成二维码
+ 
+ 二维码中的内容为链接，形式为：
+
+ weixin：//wxpay/bizpayurl?sign=XXXXX&appid=XXXXX&mch_id=XXXXX&product_id=XXXXXX&time_stamp=XXXXXX&nonce_str=XXXXX
+ 
+ 参数请看[文档](https://pay.weixin.qq.com/wiki/doc/api/native.php?chapter=6_4)
+ 
+ - 后台解析xml数据
+ 
+ 接收部分自行完成，获得xml字符串，调用如下，将xml字符串转换成 [ScanpayBean](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/scanpay/ScanpayBean.java) 对象
+
+ ``` bash 
+ // 解析xml为bean对象
+ ScanpayBean bean = WXPayUtil.xml2ScanpayBean(XmlFromQR);
+ ```
+ - 组预支付xml数据、post数据、获得返回xml、重组xml数据
+  我把全部封装起来了，预支付参数根据代码去改，调用如下。最后转换成 [ScanpayCallback](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/scanpay/ScanpayCallback.java) 对象
+
+ ``` bash 
+ // 预支付下单，解析返回xml,生成返回微信客户端支付对象
+ ScanpayCallback back = Scanpay.order(bean, ip);
+
+ // 输出对象的xml字符串到微信，自动调用支付
+ String xmlStr = back.toXMLString();
+ ``` 
+ - 返回重组的xml、完成支付
+  
+  把上方的xmlStr直接输出给微信就可以，只要正常会自动调用支付控件，完成支付
+
+### 相关区别
+ - 公众号(H5网页)支付与扫码支付区别
+  
+  * 扫码支付分为，模式一和模式二，这两种模式是不一样的。
+   
+  模式一是通过二维码中的 product_id 到系统后台来判断产品是什么，达到一系统，多个产品二维码通用的效果。
+ 
+  模式二呢，是公众号(H5网页)支付的后半的步骤，单独分出了的。在公众号(H5网页)支付的预支付下单之后，会有一个微信二维码链接。模式二就是扫的这个链接产生的二维码，微信判断连接有效就会调用支付。
+
+  公众号(H5网页)支付是获得授权来得到，授权用户的openid，再给出页面给出多钟产品选择，或者用户自己输入金额。之后再去预支付下单，让页面调js，启动微信支付控件，完成支付。
+  
+  这3种流程都不一样，不要混为一谈，不知道我解释的对不对...
+  
+### 一些开发出现的错误交流
+
+ - 很多都是在平台上配的链接不对导致的，注意看清楚要求
+
+ - 商户后台返回数据字段结构不合法
+
+  ![商户后台返回数据字段结构不合法](http://ww1.sinaimg.cn/large/8589667bgw1f4fkpnczd7j20ku112q6b.jpg)
+
+  这个是出在扫码支付模式一的，是我一开始设置扫码预支付下单时候用了跟公众号(H5网页)支付一样的 trade_type ，jsapi然后的到的 prepay_id 不可用于扫码支付 ， 后来改成 native 就好了
+
+ - package info not match special pay url 
+  
+  ![package info not match special pay url](http://ww4.sinaimg.cn/large/8589667bgw1f4fl2nw4anj20ku112tei.jpg)
+
+  这个也是出现在扫码支付的，是刚开始开发，以为跟公众号(H5网页)支付一样是以 url 拼接参数传的值，结果不是，是xml数据post的方式。

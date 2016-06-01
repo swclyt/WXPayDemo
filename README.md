@@ -66,7 +66,7 @@
  
  在我的 [WXPayDemo/WXPay/src/org/swchalu/wxpay/utils/OauthUtils.java](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/utils/OauthUtils.java) 中写了两个方法
  
- ``` bash 
+ ``` java 
   OauthUtils.class
    //通过授权得到的code获取token的json字符串
    public static JSON getTokenJson(String code) {}
@@ -88,7 +88,7 @@
  
  - js调用支付
  
- ``` bash 
+ ``` javascript 
  function pay(data) {
 		var appId = data.appId;
 		var timeStamp = data.timeStamp;
@@ -141,14 +141,14 @@
  
  接收部分自行完成，获得xml字符串，调用如下，将xml字符串转换成 [ScanpayBean](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/scanpay/ScanpayBean.java) 对象
 
- ``` bash 
+ ``` java 
  // 解析xml为bean对象
  ScanpayBean bean = WXPayUtil.xml2ScanpayBean(XmlFromQR);
  ```
  - 组预支付xml数据、post数据、获得返回xml、重组xml数据
   我把全部封装起来了，预支付参数根据代码去改，调用如下。最后转换成 [ScanpayCallback](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/scanpay/ScanpayCallback.java) 对象
 
- ``` bash 
+ ``` java 
  // 预支付下单，解析返回xml,生成返回微信客户端支付对象
  ScanpayCallback back = Scanpay.order(bean, ip);
 

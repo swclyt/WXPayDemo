@@ -12,6 +12,8 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.swchalu.wxpay.bean.AccessToken;
 import org.swchalu.wxpay.common.WXPayContants;
+import org.swchalu.wxpay.orderquery.OrderQueryBean;
+import org.swchalu.wxpay.orderquery.OrderQueryCallback;
 import org.swchalu.wxpay.utils.OauthUtils;
 import org.swchalu.wxpay.utils.WXPayUtil;
 
@@ -34,7 +36,7 @@ public class Prepay {
 	 *            交易金额，单位分
 	 * @param trade_type
 	 *            交易类型
-	 * @return
+	 * @return {@link PrepayCallback}
 	 */
 	public static PrepayCallback prepay(String body, String detail,
 			String openid, String out_trade_no, String ip, String fee,
@@ -63,7 +65,8 @@ public class Prepay {
 		System.out.println("xml -> " + bean.toXMLString());
 
 		// 以post方式上传数据
-		String backXMLStr = post(bean.toXMLString());
+		String backXMLStr = post(bean.toXMLString(),
+				WXPayContants.getPrepay_url());
 		if (backXMLStr.length() > 0) {
 			// 解析返回预支付结果
 			PrepayCallback callback = WXPayUtil.xml2PrepayCallback(backXMLStr);
@@ -86,7 +89,7 @@ public class Prepay {
 	 *            客户端ip地址
 	 * @param fee
 	 *            交易金额，单位分
-	 * @return
+	 * @return {@link PrepayCallback}
 	 */
 	public static PrepayCallback order(String code, String body, String detail,
 			String ip, String fee) {
@@ -119,7 +122,7 @@ public class Prepay {
 	 *            用户ip地址
 	 * @param fee
 	 *            交易金额，单位分
-	 * @return
+	 * @return {@link PrepayCallback}
 	 */
 	public static PrepayCallback scanOrder(String openid, String body,
 			String detail, String ip, String fee) {
@@ -141,9 +144,9 @@ public class Prepay {
 	 * @return
 	 */
 	@SuppressWarnings("deprecation")
-	public static String post(String xml) {
+	public static String post(String xml, String url) {
 		// 请求地址
-		PostMethod post = new PostMethod(WXPayContants.getPrepay_url());
+		PostMethod post = new PostMethod(url);
 		String backXML = "";
 
 		post.setRequestBody(xml);// 这里添加xml字符串
@@ -175,5 +178,45 @@ public class Prepay {
 			e.printStackTrace();
 		}
 		return backXML;
+	}
+
+	/**
+	 * 微信支付订单查询，transaction_id和out_trade_no是二选一
+	 * 
+	 * @param transaction_id
+	 *            微信给的订单号
+	 * @param out_trade_no
+	 *            自己系统后台保存的订单号，跟预支付下单的一致
+	 * @param openid
+	 * @return {@link OrderQueryCallback} 订单查询返回实体类
+	 */
+	public static OrderQueryCallback orderQuery(String transaction_id,
+			String out_trade_no, String openid) {
+		// OrderQueryBean 订单查询实体类
+		OrderQueryBean bean = new OrderQueryBean();
+		bean.setAppid(WXPayContants.getAppid())
+				.setMch_id(WXPayContants.getMch_id())
+				.setNonce_str(WXPayUtil.getNonceStr());
+		// transaction_id和out_trade_no是二选一
+		if (transaction_id != null && transaction_id.length() > 0)
+			bean.setTransaction_id(transaction_id);
+		else
+			bean.setOut_trade_no(out_trade_no);
+		System.out.println("orderQuery OrderQueryBean : " + bean.toString());
+		// 签名
+		bean.setSign(WXPayUtil.sign(bean.toString()));
+		// 发送报文
+		String backXMLStr = post(bean.toXMLString(),
+				WXPayContants.getOrderquery_url());
+		// 有返回
+		if (backXMLStr.length() > 0) {
+			// 解析返回xml
+			OrderQueryCallback callback = WXPayUtil
+					.xml2OrderQueryCallback(backXMLStr);
+			String trade_state = callback.getTrade_state();
+			System.out.println("orderQuery trade_state : " + trade_state);
+			return callback;
+		}
+		return null;
 	}
 }

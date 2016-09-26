@@ -71,11 +71,11 @@ public class AccessToken {
 
 	public String toString() {
 		StringBuffer out = new StringBuffer("");
-		out.append("AccessToken : " + getAccess_token() + "\n");
-		out.append("Expires_in : " + getExpires_in() + "\n");
-		out.append("Openid : " + getOpenid() + "\n");
-		out.append("Refresh_token : " + getRefresh_token() + "\n");
-		out.append("Scope : " + getScope() + "\n");
+		out.append("AccessToken : " + getAccess_token() + "; ");
+		out.append("Expires_in : " + getExpires_in() + "; ");
+		out.append("Openid : " + getOpenid() + "; ");
+		out.append("Refresh_token : " + getRefresh_token() + "; ");
+		out.append("Scope : " + getScope() + "; ");
 		return out.toString();
 	}
 }

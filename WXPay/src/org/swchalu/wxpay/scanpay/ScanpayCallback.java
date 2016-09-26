@@ -1,5 +1,11 @@
 package org.swchalu.wxpay.scanpay;
 
+/**
+ * 扫描支付下单返回实体类
+ * 
+ * @author swchalu
+ *
+ */
 public class ScanpayCallback {
 	private String return_code;
 	private String return_msg;

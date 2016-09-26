@@ -1,5 +1,11 @@
 package org.swchalu.wxpay.prepay;
 
+/**
+ * 预支付下单实体类
+ * 
+ * @author swchalu
+ *
+ */
 public class PrepayBean {
 	/** 公众账号ID */
 	private String appid;

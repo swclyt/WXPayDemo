@@ -5,8 +5,21 @@ import org.swchalu.wxpay.prepay.Prepay;
 import org.swchalu.wxpay.prepay.PrepayCallback;
 import org.swchalu.wxpay.utils.WXPayUtil;
 
+/**
+ * 扫码支付
+ * 
+ * @author swchalu
+ *
+ */
 public class Scanpay {
 
+	/**
+	 * 扫码支付下单
+	 * 
+	 * @param bean
+	 * @param ip
+	 * @return
+	 */
 	public static ScanpayCallback order(ScanpayBean bean, String ip) {
 
 		ScanpayCallback back = new ScanpayCallback();

@@ -1,5 +1,11 @@
 package org.swchalu.wxpay.prepay;
 
+/**
+ * 预支付下单返回实体类
+ * 
+ * @author swchalu
+ *
+ */
 public class PrepayCallback {
 	private String return_code;
 	private String return_msg;

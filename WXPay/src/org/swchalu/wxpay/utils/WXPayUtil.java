@@ -10,9 +10,16 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.swchalu.wxpay.common.WXPayContants;
+import org.swchalu.wxpay.orderquery.OrderQueryCallback;
 import org.swchalu.wxpay.prepay.PrepayCallback;
 import org.swchalu.wxpay.scanpay.ScanpayBean;
 
+/**
+ * 微信支付工具类
+ * 
+ * @author swchalu
+ *
+ */
 public class WXPayUtil {
 	// 49-57[0-9],65-90[A-Z],97-122[a-z]
 	/**
@@ -218,4 +225,112 @@ public class WXPayUtil {
 		return String.valueOf(timestamp);
 	}
 
+	/**
+	 * 微信订单查询返回xml解析成实体类
+	 * 
+	 * @param XMLStr
+	 * @return
+	 */
+	public static OrderQueryCallback xml2OrderQueryCallback(String XMLStr) {
+		// TODO Auto-generated method stub
+		OrderQueryCallback callback = null;
+
+		Document document;
+		try {
+			document = DocumentHelper.parseText(XMLStr);
+			Element e = document.getRootElement();
+			callback = new OrderQueryCallback();
+
+			callback.setReturn_code(e.element("return_code").getStringValue());
+			// return_msg 可空
+			if (e.element("return_msg") != null)
+				callback.setReturn_msg(e.element("return_msg").getStringValue());
+			if (callback.getReturn_code() != null
+					&& callback.getReturn_code().equals(WXPayContants.SUCCESS)) {
+				callback.setAppid(e.element("appid").getStringValue());
+				callback.setMch_id(e.element("mch_id").getStringValue());
+				callback.setNonce_str(e.element("nonce_str").getStringValue());
+				callback.setSign(e.element("sign").getStringValue());
+				callback.setResult_code(e.element("result_code")
+						.getStringValue());
+
+				// err_code可空
+				if (e.element("err_code") != null)
+					callback.setErr_code(e.element("err_code").getStringValue());
+				// err_code_des可空
+				if (e.element("err_code_des") != null)
+					callback.setErr_code_des(e.element("err_code_des")
+							.getStringValue());
+
+				if (callback.getResult_code() != null
+						&& callback.getResult_code().equals(
+								WXPayContants.SUCCESS)) {
+					// device_info
+					if (e.element("device_info") != null)
+						callback.setDevice_info(e.element("device_info")
+								.getStringValue());
+					if (e.element("openid") != null)
+						callback.setOpenid(e.element("openid").getStringValue());
+					// is_subscribe
+					if (e.element("is_subscribe") != null)
+						callback.setIs_subscribe(e.element("is_subscribe")
+								.getStringValue());
+					if (e.element("trade_type") != null)
+						callback.setTrade_type(e.element("trade_type")
+								.getStringValue());
+					if (e.element("trade_state") != null)
+						callback.setTrade_state(e.element("trade_state")
+								.getStringValue());
+					if (e.element("bank_type") != null)
+						callback.setBank_type(e.element("bank_type")
+								.getStringValue());
+					if (e.element("total_fee") != null)
+						callback.setTotal_fee(e.element("total_fee")
+								.getStringValue());
+					// settlement_total_fee
+					if (e.element("settlement_total_fee") != null)
+						callback.setSettlement_total_fee(e.element(
+								"settlement_total_fee").getStringValue());
+					// fee_type
+					if (e.element("fee_type") != null)
+						callback.setFee_type(e.element("fee_type")
+								.getStringValue());
+					if (e.element("cash_fee") != null)
+						callback.setCash_fee(e.element("cash_fee")
+								.getStringValue());
+					// cash_fee_type
+					if (e.element("cash_fee_type") != null)
+						callback.setCash_fee_type(e.element("cash_fee_type")
+								.getStringValue());
+					// coupon_fee
+					if (e.element("coupon_fee") != null)
+						callback.setCoupon_fee(e.element("coupon_fee")
+								.getStringValue());
+					// coupon_count
+					if (e.element("coupon_count") != null)
+						callback.setCoupon_count(e.element("coupon_count")
+								.getStringValue());
+					if (e.element("attach") != null)
+						callback.setAttach(e.element("attach").getStringValue());
+					if (e.element("transaction_id") != null)
+						callback.setTransaction_id(e.element("transaction_id")
+								.getStringValue());
+					if (e.element("out_trade_no") != null)
+						callback.setOut_trade_no(e.element("out_trade_no")
+								.getStringValue());
+					if (e.element("time_end") != null)
+						callback.setTime_end(e.element("time_end")
+								.getStringValue());
+					if (e.element("trade_state_desc") != null)
+						callback.setTrade_state_desc(e.element(
+								"trade_state_desc").getStringValue());
+				}
+			}
+			return callback;
+		} catch (DocumentException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return null;
+	}
 }

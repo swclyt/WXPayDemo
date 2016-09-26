@@ -1,5 +1,11 @@
 package org.swchalu.wxpay.scanpay;
 
+/**
+ * 扫码支付实体类
+ * 
+ * @author swchalu
+ *
+ */
 public class ScanpayBean {
 	private String appid;
 	private String openid;

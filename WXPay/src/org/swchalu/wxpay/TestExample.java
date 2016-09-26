@@ -1,5 +1,7 @@
 package org.swchalu.wxpay;
 
+import org.swchalu.wxpay.common.WXPayError;
+import org.swchalu.wxpay.orderquery.OrderQueryCallback;
 import org.swchalu.wxpay.prepay.Prepay;
 import org.swchalu.wxpay.prepay.PrepayCallback;
 import org.swchalu.wxpay.scanpay.Scanpay;
@@ -59,5 +61,34 @@ public class TestExample {
 		// 输出对象的xml字符串到微信，自动调用支付
 		String xmlStr = back.toXMLString();
 		System.out.println("返回预支付结果的xml-> " + xmlStr);
+	}
+
+	/**
+	 * 微信支付订单查询，transaction_id和out_trade_no是二选一
+	 * 
+	 * @param transaction_id
+	 *            微信给的订单号
+	 * @param out_trade_no
+	 *            自己系统后台保存的订单号，跟预支付下单的一致
+	 * @param openid
+	 */
+	public void orderQuery(String transaction_id, String out_trade_no,
+			String openid) {
+		// transaction_id是微信给的订单号
+		// out_trade_no是自己系统后台保存的订单号，跟预支付下单的一致
+		// transaction_id和out_trade_no是二选一
+		OrderQueryCallback callback = Prepay.orderQuery(transaction_id,
+				out_trade_no, openid);
+		if (callback != null) {
+			String trade_state = callback.getTrade_state();
+			// 根据自己的需求判读返回码
+			if (trade_state.equals(WXPayError.TRADE_STATE_CLOSED)
+					|| trade_state.equals(WXPayError.TRADE_STATE_PAYERROR)) {
+			} else if (trade_state.equals(WXPayError.TRADE_STATE_SUCCESS)) {
+			} else if (trade_state.equals(WXPayError.TRADE_STATE_REVOKED)
+					|| trade_state.equals(WXPayError.TRADE_STATE_REFUND)) {
+			} else {
+			}
+		}
 	}
 }

@@ -20,6 +20,7 @@ public class Scanpay {
 	 * @param ip
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public static ScanpayCallback order(ScanpayBean bean, String ip) {
 
 		ScanpayCallback back = new ScanpayCallback();

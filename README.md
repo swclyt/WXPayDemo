@@ -1,12 +1,16 @@
 # WXPayDemo
  2016-06-01
  给后台的demo，包含公众号(H5网页)支付，扫码模式一，模式二为公众号(H5网页)支付的后半步骤
+ 2016-10-11
+ 小更新，添加了微信支付订单查询...
  
  转载请附上 [WXPayDemo](https://github.com/swclyt/WXPayDemo) 项目的github链接...
  
  尊重作者劳动成果...
+# 目录
+ - [*公众号(H5网页)支付](#H5pay)
 
-## *公众号(H5网页)支付
+## <a name="H5pay">*公众号(H5网页)支付</a>
  1) 先在微信公众平台设置OAuth2授权回调路径，在接口权限里面
 
  ![接口权限](http://ww3.sinaimg.cn/large/8589667bgw1f4fi2e8xnqj207u05sglo.jpg)

@@ -1,7 +1,7 @@
 package org.swchalu.wxpay.prepay;
 
 /**
- * 预支付下单返回实体类
+ * 棰勬敮浠樹笅鍗曡繑鍥炲疄浣撶被
  * 
  * @author swchalu
  *

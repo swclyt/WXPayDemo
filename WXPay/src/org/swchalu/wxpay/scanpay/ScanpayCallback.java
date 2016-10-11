@@ -1,7 +1,7 @@
 package org.swchalu.wxpay.scanpay;
 
 /**
- * É¨ÃèÖ§¸¶ÏÂµ¥·µ»ØÊµÌåÀà
+ * æ‰«ææ”¯ä»˜ä¸‹å•è¿”å›å®ä½“ç±»
  * 
  * @author swchalu
  *

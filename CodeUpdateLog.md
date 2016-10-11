@@ -1,3 +1,5 @@
+# 代码更新日志
+
 2016-06-01
  - 第一次提交，包含微信H5支付，及扫码支付（first commit, wxpay demo for server，swclyt Commits on Jun 1, 2016）
 

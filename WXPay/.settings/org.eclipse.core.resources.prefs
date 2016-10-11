@@ -1,4 +1,4 @@
 eclipse.preferences.version=1
 encoding//src/org/swchalu/wxpay/prepay/PrepayCallback.java=UTF-8
-encoding//src/org/swchalu/wxpay/scanpay/ScanpayBean.java=GBK
+encoding//src/org/swchalu/wxpay/scanpay/ScanpayBean.java=UTF-8
 encoding//src/org/swchalu/wxpay/scanpay/ScanpayCallback.java=UTF-8

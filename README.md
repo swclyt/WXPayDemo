@@ -12,7 +12,7 @@
  - [*公众号(H5网页)支付](#H5pay) -> [详情](#H5payd)
  - [*扫码支付(特指模式一)](#Scanpay) -> [详情](#Scanpayd)
  - [*预支付下单(最重要的部分)](#Prepay)
- - [*支付订单查询](#Orderquery)更新中...
+ - [*支付订单查询](#Orderquery)
  - [*相关区别(纯属个人理解)](#Diff)
  - [*一些开发出现的错误交流(部分个人遇到的)](#Error)
 
@@ -168,6 +168,74 @@
  - 返回重组的xml、完成支付
   
   把上方的xmlStr直接输出给微信就可以，只要正常会自动调用支付控件，完成支付
+
+## <a name="Orderquery">*支付订单查询</a>
+ - 前期准备
+  
+  * 如果支付部分都是正常的，这部分没有其他需要额外配置的地方，具体的提交参数，看 [文档](https://pay.weixin.qq.com/wiki/doc/api/jsapi.php?chapter=9_2) ，比较需要注意的如下，
+  
+  ![文档截图](http://odqay9hhn.bkt.clouddn.com/image/qq20161011100950.png)
+  
+  
+  `微信订单号  transaction_id  这个是微信支付系统产生的订单号`
+  
+  `商户订单号  out_trade_no    这个是自己保存在后台系统的订单号`
+  
+  这两个参数是二选一，还有微信订单号优先级大过商户订单号，但一般用商户订单号比较容易，因为微信那个订单号比较难拿到
+  
+ - 流程如下
+ 
+ 组成请求参数xml数据 -> post提交xml数据 -> 获得微信返回xml数据 -> 解析得到订单相关结果
+
+ - 组装xml数据
+ 
+ 写了个实体类 [OrderQueryBean.java](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/orderquery/OrderQueryBean.java) ,只要实例化之后把参数传进去即可。做了判断，transaction_id在的话就只传transaction_id，否则传out_trade_no。
+ 
+ ``` java
+ // OrderQueryBean 订单查询实体类
+ OrderQueryBean bean = new OrderQueryBean();
+ bean.setAppid(WXPayContants.getAppid())
+	.setMch_id(WXPayContants.getMch_id())
+ 	.setNonce_str(WXPayUtil.getNonceStr());
+ // transaction_id和out_trade_no是二选一
+ if (transaction_id != null && transaction_id.length() > 0)
+ 	bean.setTransaction_id(transaction_id);
+ else
+	bean.setOut_trade_no(out_trade_no);
+ ```
+ 
+ - 后台解析xml数据
+ 
+ 数据解析成实体类 [OrderQueryCallback](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/orderquery/OrderQueryCallback.java) 
+ 具体使用，直接传入返回的xml字符串数据解析成实体类
+ 
+ ``` java
+ // 解析返回xml
+ OrderQueryCallback callback = WXPayUtil.xml2OrderQueryCallback(backXMLStr);
+ ```
+
+ - 具体组装xmlb数据，post数据，接收xml返回数据，解析成实体类
+
+ 具体的流程封装成 [Prepay](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/prepay/Prepay.java) 类的方法orderQuery(),使用如下，返回的callback如果为null，证明没有返回结果。不为null，则可以调用OrderQueryCallback的getTrade_state()拿到结果代码。
+ 所有的结果代码和错误码写在类 [WXPayError](https://github.com/swclyt/WXPayDemo/blob/master/WXPay/src/org/swchalu/wxpay/common/WXPayError.java) 中。
+ 具体返回码怎么判断自己按需求写。
+ 
+ ``` java
+ // transaction_id是微信给的订单号
+ // out_trade_no是自己系统后台保存的订单号，跟预支付下单的一致
+ // transaction_id和out_trade_no是二选一
+ OrderQueryCallback callback = Prepay.orderQuery(transaction_id, out_trade_no, openid);
+ if (callback != null) {
+ 	String trade_state = callback.getTrade_state();
+ // 根据自己的需求判读返回码
+ if (trade_state.equals(WXPayError.TRADE_STATE_CLOSED)
+	|| trade_state.equals(WXPayError.TRADE_STATE_PAYERROR)) {
+ } else if (trade_state.equals(WXPayError.TRADE_STATE_SUCCESS)) {
+ } else if (trade_state.equals(WXPayError.TRADE_STATE_REVOKED)
+	|| trade_state.equals(WXPayError.TRADE_STATE_REFUND)) {
+ } else {
+ }
+ ```
 
 ## <a name="Diff">*相关区别</a>
  - 公众号(H5网页)支付与扫码支付区别
